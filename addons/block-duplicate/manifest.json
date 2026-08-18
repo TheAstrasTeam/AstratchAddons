@@ -1,0 +1,11 @@
+{
+  "name": "Block Duplicate",
+  "version": "1.0.0",
+  "description": "Ctrl+click or middle-click a block to duplicate it and drag the copy.",
+  "author": "AstrasTeam",
+  "license": "MIT",
+  "icon": "icon.svg",
+  "defaultEnabled": true,
+  "files": ["main.js"],
+  "main": "main.js"
+}

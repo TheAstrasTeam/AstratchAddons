@@ -1,0 +1,10 @@
+{
+  "name": "Example Addon",
+  "version": "1.0.0",
+  "description": "A sample addon that shows a notification when enabled.",
+  "author": "AstrasTeam",
+  "license": "MIT",
+  "icon": "icon.svg",
+  "files": ["main.js"],
+  "main": "main.js"
+}
