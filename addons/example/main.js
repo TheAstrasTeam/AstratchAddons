@@ -62,6 +62,11 @@ var main_default = (ctx) => {
   document.body.appendChild(badge);
   return () => {
     badge.remove();
+    ctx.toast.create({
+      type: "info",
+      id: "addon_example_bye",
+      text: ctx.t("addon_example:bye")
+    });
   };
 };
 export {

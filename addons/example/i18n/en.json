@@ -1,3 +1,4 @@
 {
-  "greet": "Hello, world!"
+  "greet": "Hello, world!",
+  "bye": "Example addon disabled."
 }

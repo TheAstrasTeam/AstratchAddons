@@ -20,5 +20,10 @@ export default (ctx: AddonContext) => {
 
   return () => {
     badge.remove();
+    ctx.toast.create({
+      type: "info",
+      id: "addon_example_bye",
+      text: ctx.t("addon_example:bye"),
+    });
   };
 };
