@@ -5,6 +5,9 @@
   "author": "AstrasTeam",
   "license": "MIT",
   "icon": "icon.svg",
-  "files": ["main.js"],
+  "typescript": true,
+  "files": [
+    "main.js"
+  ],
   "main": "main.js"
 }

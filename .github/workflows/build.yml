@@ -1,0 +1,41 @@
+name: Build Addons
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Compile TSX addons to JS
+        run: npm run build
+
+      - name: Update .gitattributes for TSX addons
+        run: npm run gitattributes
+
+      - name: Commit compiled output
+        if: github.event_name == 'push'
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "build: compile addon TSX to JS"
+          file_pattern: "addons/*/main.js addons/*/manifest.json .gitattributes"

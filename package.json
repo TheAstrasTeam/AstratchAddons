@@ -1,0 +1,17 @@
+{
+  "name": "astratch-addons",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "The addons of Astratch",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "gitattributes": "node scripts/update-gitattributes.mjs",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run build && npm run gitattributes"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5.6.0"
+  }
+}

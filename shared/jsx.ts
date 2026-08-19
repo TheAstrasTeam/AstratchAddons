@@ -1,29 +1,54 @@
-// shared/jsx.ts
-var Fragment = Symbol("Fragment");
-var toNode = (child) => {
+export type JsxChild =
+  | Element
+  | DocumentFragment
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | JsxChild[];
+
+export interface JsxProps {
+  className?: string;
+  style?: string;
+  children?: JsxChild;
+  [key: string]: unknown;
+}
+
+export const Fragment: unique symbol = Symbol("Fragment");
+
+const toNode = (child: JsxChild): Node => {
   if (child == null || child === false) return document.createTextNode("");
   if (typeof child === "string" || typeof child === "number") {
     return document.createTextNode(String(child));
   }
-  return child;
+  return child as Node;
 };
-var appendChild = (parent, child) => {
+
+const appendChild = (parent: Node, child: JsxChild): void => {
   if (Array.isArray(child)) {
     for (const item of child) appendChild(parent, item);
   } else {
     parent.appendChild(toNode(child));
   }
 };
-var appendChildren = (parent, children) => {
+
+const appendChildren = (parent: Node, children: JsxChild[]): void => {
   for (const child of children) appendChild(parent, child);
 };
-var h = (tag, props, ...children) => {
+
+export const h = (
+  tag: string | typeof Fragment,
+  props: JsxProps | null,
+  ...children: JsxChild[]
+): Element => {
   if (tag === Fragment) {
     const fragment = document.createDocumentFragment();
     appendChildren(fragment, children);
-    return fragment;
+    return fragment as unknown as Element;
   }
-  const element = document.createElement(tag);
+
+  const element = document.createElement(tag as string);
   for (const [key, value] of Object.entries(props ?? {})) {
     if (value == null || value === false) continue;
     if (key === "children") continue;
@@ -34,7 +59,7 @@ var h = (tag, props, ...children) => {
     } else if (key.startsWith("on") && typeof value === "function") {
       element.addEventListener(
         key.slice(2).toLowerCase(),
-        value
+        value as EventListener,
       );
     } else {
       element.setAttribute(key, String(value));
@@ -44,26 +69,11 @@ var h = (tag, props, ...children) => {
   return element;
 };
 
-// addons/example/main.tsx
-var main_default = (ctx) => {
-  ctx.toast.create({
-    type: "info",
-    id: "addon_example_greet",
-    text: ctx.t("addon_example:greet")
-  });
-  const badge = /* @__PURE__ */ h(
-    "div",
-    {
-      className: "astratch-example-badge",
-      style: "position:fixed;right:12px;bottom:12px;z-index:99999;padding:8px 12px;background:#855cd6;color:#fff;border-radius:8px;font:12px/1.4 system-ui, sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.35)"
-    },
-    ctx.t("addon_example:greet")
-  );
-  document.body.appendChild(badge);
-  return () => {
-    badge.remove();
-  };
-};
-export {
-  main_default as default
-};
+declare global {
+  namespace JSX {
+    type Element = globalThis.Element;
+    interface IntrinsicElements {
+      [elemName: string]: unknown;
+    }
+  }
+}
