@@ -1,4 +1,10 @@
 {
+  "@name": "Example Addon",
+  "@description": "A sample addon that shows a notification when enabled.",
+  "@settings/name": "Greeting name",
+  "@settings/volume": "Volume",
+  "@settings/notifyOnDisable": "Notify on disable",
+  "@settings/note": "Multiline note",
   "greet": "Hello, world!",
   "bye": "Goodbye, world!"
 }
