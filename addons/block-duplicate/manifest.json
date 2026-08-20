@@ -1,11 +1,11 @@
 {
-  "name": "Block Duplicate",
+  "name": "Hold Alt to Duplicate Blocks",
   "version": "1.0.0",
-  "description": "Ctrl+click or middle-click a block to duplicate it and drag the copy.",
+  "description": "Quickly duplicate a script by dragging it while holding the Alt key.",
   "author": "AstrasTeam",
   "license": "MIT",
   "icon": "icon.svg",
-  "defaultEnabled": true,
+  "defaultEnabled": false,
   "files": ["main.js"],
   "main": "main.js"
 }
