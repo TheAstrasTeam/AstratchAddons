@@ -4,3 +4,4 @@ dist/
 
 # Built releases live on the release branch, not main
 addons/*/releases/
+release/

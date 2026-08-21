@@ -63,6 +63,11 @@ for (const name of addons) {
     cpSync(srcAssets, join(outDir, "assets"), { recursive: true });
   }
 
+  const srcI18n = join(releaseDir, "i18n");
+  if (existsSync(srcI18n)) {
+    cpSync(srcI18n, join(outDir, "i18n"), { recursive: true });
+  }
+
   totalReleases++;
   console.log(`[release] ${name}@v${version}`);
 }
