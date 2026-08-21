@@ -47,35 +47,46 @@ jobs:
         if: github.event_name == 'push'
         run: node scripts/prepare-release.mjs
 
-      - name: Deploy to release branch (merge, never remove old versions)
+      - name: Deploy to release branch (append-only, never remove old versions)
         if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Fetch release branch
-          git fetch origin release:release 2>/dev/null || true
+          # Work in a temp directory
+          WORK=$(mktemp -d)
+          cd "$WORK"
 
-          if git rev-parse --verify release >/dev/null 2>&1; then
-            # Release branch exists — checkout and merge new files
-            git checkout release
-            # Copy new release files on top (additive, never removes)
-            cp -rn "$GITHUB_WORKSPACE/release/"* . 2>/dev/null || true
-            # Always overwrite registry.json (it's the source of truth)
-            cp "$GITHUB_WORKSPACE/release/registry.json" ./registry.json
-            git add -A
-            if ! git diff --cached --quiet; then
-              git commit -m "build: update release branch"
-              git push origin release
-            else
-              echo "No changes to commit"
-            fi
+          git init
+          git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+          # Try to fetch existing release branch
+          if git fetch origin release 2>/dev/null; then
+            git checkout -b release FETCH_HEAD
           else
-            # First time — create orphan branch with release content
             git checkout --orphan release
             git rm -rf . 2>/dev/null || true
-            cp -r "$GITHUB_WORKSPACE/release/"* .
-            git add -A
-            git commit -m "build: initial release branch"
-            git push origin release
+          fi
+
+          # Remove stale non-release dirs/files (addons, node_modules, release, scripts, etc.)
+          # Keep only: <id>@v<version>/ dirs and registry.json
+          for item in *; do
+            case "$item" in
+              registry.json) ;; # keep
+              *@v*) ;;           # keep versioned addon dirs
+              *) rm -rf "$item" ;; # remove everything else
+            esac
+          done
+
+          # Copy new release files on top (additive, never removes old versioned dirs)
+          cp -rn "${{ github.workspace }}/release/"* . 2>/dev/null || true
+          # Always overwrite registry.json
+          cp "${{ github.workspace }}/release/registry.json" ./registry.json
+
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -m "build: update release branch"
+            git push origin HEAD:release --force
+          else
+            echo "No changes to commit"
           fi
