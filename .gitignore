@@ -1,6 +1,7 @@
 node_modules/
 dist/
 *.log
+registry.json
 
 # Built releases live on the release branch, not main
 addons/*/releases/

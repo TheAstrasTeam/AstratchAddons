@@ -33,17 +33,7 @@ jobs:
       - name: Compile addons to versioned releases
         run: npm run build
 
-      - name: Generate registry.json
-        run: npm run registry
-
-      - name: Commit registry.json to main
-        if: github.event_name == 'push'
-        uses: stefanzweifel/git-auto-commit-action@v5
-        with:
-          commit_message: "build: update registry.json"
-          file_pattern: "registry.json"
-
-      - name: Prepare release content
+      - name: Prepare release content (generates registry.json)
         if: github.event_name == 'push'
         run: node scripts/prepare-release.mjs
 
@@ -66,7 +56,7 @@ jobs:
           fi
 
           # Remove stale non-release dirs/files
-          # Keep only: <id>@v<version>/ dirs, registry.json, and i18n inside them
+          # Keep only: <id>@v<version>/ dirs and registry.json
           for item in *; do
             case "$item" in
               registry.json) ;; # keep

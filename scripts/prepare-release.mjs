@@ -1,20 +1,25 @@
 /**
  * prepare-release.mjs
  *
- * 读取当前构建的版本（info.yaml 中的 version），输出到 release/ 目录：
+ * 生成 registry.json 并输出当前构建版本到 release/ 目录：
  *   release/<id>@v<version>/addon.js
  *   release/<id>@v<version>/info.json
  *   release/<id>@v<version>/assets/
+ *   release/<id>@v<version>/i18n/
  *   release/registry.json
  *
  * 只输出当前版本，不包含历史版本（历史版本已在 release 分支上）。
+ * registry.json 只存在于 release 分支，不提交到 main。
  */
 import {
   cpSync,
   existsSync,
   mkdirSync,
   readFileSync,
+  readdirSync,
+  statSync,
   writeFileSync,
+  rmSync,
 } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
@@ -26,11 +31,39 @@ if (!Array.isArray(addons)) {
 
 const OUT_DIR = "release";
 
-import { rmSync } from "node:fs";
 if (existsSync(OUT_DIR)) {
   rmSync(OUT_DIR, { recursive: true });
 }
 mkdirSync(OUT_DIR, { recursive: true });
+
+/** 读取并解析插件的 info.yaml */
+function readInfo(name) {
+  const dir = join("addons", name);
+  const infoPath = join(dir, "info.yaml");
+  if (!existsSync(infoPath)) {
+    throw new Error(`${name}: missing info.yaml`);
+  }
+  return parse(readFileSync(infoPath, "utf8"));
+}
+
+const semverCompare = (a, b) => {
+  const pa = a.split(".").map(Number);
+  const pb = b.split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const da = pa[i] ?? 0;
+    const db = pb[i] ?? 0;
+    if (da !== db) return da - db;
+  }
+  return 0;
+};
+
+// ── 生成 registry.json ──
+
+const registry = {
+  schemaVersion: 1,
+  generatedAt: new Date().toISOString(),
+  addons: [],
+};
 
 let totalReleases = 0;
 
@@ -41,14 +74,63 @@ for (const name of addons) {
     continue;
   }
   const info = parse(readFileSync(infoPath, "utf8"));
-  const version = String(info.version ?? "1.0.0");
 
-  const releaseDir = join("addons", name, "releases", version);
-  if (!existsSync(releaseDir)) {
-    console.log(`[skip] ${name}@${version}: no release dir (run build first)`);
+  const releasesDir = join("addons", name, "releases");
+  if (!existsSync(releasesDir)) {
+    console.log(`[skip] ${name}: no releases dir (run build first)`);
+    continue;
+  }
+  const versions = readdirSync(releasesDir)
+    .filter(
+      (v) =>
+        existsSync(join(releasesDir, v, "addon.js")) &&
+        statSync(join(releasesDir, v, "addon.js")).isFile(),
+    )
+    .sort(semverCompare);
+
+  if (versions.length === 0) {
+    console.log(`[skip] ${name}: no built releases`);
     continue;
   }
 
+  const currentVersion = versions[versions.length - 1];
+
+  // 图标：输出相对路径
+  let icon = "";
+  if (info.icon) {
+    icon = `${name}@v${currentVersion}/${info.icon}`;
+  }
+
+  // i18n：输出相对路径
+  const i18n = {};
+  const i18nDir = join("addons", name, "i18n");
+  if (existsSync(i18nDir)) {
+    for (const localeFile of readdirSync(i18nDir).filter((f) => f.endsWith(".json"))) {
+      const locale = localeFile.replace(/\.json$/, "");
+      i18n[locale] = `${name}@v${currentVersion}/i18n/${localeFile}`;
+    }
+  }
+
+  registry.addons.push({
+    id: name,
+    name: info.name ?? name,
+    version: currentVersion,
+    author: info.author ?? "",
+    description: info.description ?? "",
+    license: info.license ?? "MIT",
+    icon,
+    defaultEnabled: info.defaultEnabled ?? false,
+    settings: info.astratch?.settings ?? [],
+    i18n,
+    astratch: { minVersion: info.astratch?.minVersion ?? "0.0.0" },
+    versions,
+    download: `${name}@v${currentVersion}/`,
+  });
+
+  // ── 拷贝 release 产物 ──
+
+  const version = String(info.version ?? "1.0.0");
+  const releaseDir = join(releasesDir, version);
   const outDir = join(OUT_DIR, `${name}@v${version}`);
   mkdirSync(outDir, { recursive: true });
 
@@ -63,18 +145,15 @@ for (const name of addons) {
     cpSync(srcAssets, join(outDir, "assets"), { recursive: true });
   }
 
-  const srcI18n = join("addons", name, "i18n");
-  if (existsSync(srcI18n)) {
-    cpSync(srcI18n, join(outDir, "i18n"), { recursive: true });
+  if (existsSync(i18nDir)) {
+    cpSync(i18nDir, join(outDir, "i18n"), { recursive: true });
   }
 
   totalReleases++;
-  console.log(`[release] ${name}@v${version}`);
+  console.log(`[release] ${name}@${version} (${versions.length} versions)`);
 }
 
-if (existsSync("registry.json")) {
-  cpSync("registry.json", join(OUT_DIR, "registry.json"));
-  console.log(`[release] registry.json`);
-}
-
+// 写入 registry.json
+writeFileSync(join(OUT_DIR, "registry.json"), `${JSON.stringify(registry, null, 2)}\n`);
+console.log(`registry.json: ${registry.addons.length} addons`);
 console.log(`\nPrepared ${totalReleases} release(s) in ${OUT_DIR}/`);
