@@ -154,12 +154,6 @@ for (const name of addons) {
     cpSync(srcAssets, join(releaseDir, "assets"), { recursive: true });
   }
 
-  // 拷贝 i18n 翻译文件
-  const srcI18n = join(dir, "i18n");
-  if (existsSync(srcI18n)) {
-    cpSync(srcI18n, join(releaseDir, "i18n"), { recursive: true });
-  }
-
   // 生成机器可读的 info.json（info.yaml 的 JSON 形式）
   writeFileSync(
     join(releaseDir, "info.json"),

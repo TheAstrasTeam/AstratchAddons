@@ -50,13 +50,14 @@ jobs:
       - name: Deploy to release branch (append-only, never remove old versions)
         if: github.event_name == 'push'
         run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
           # Work in a temp directory
           WORK=$(mktemp -d)
           cd "$WORK"
 
           git init
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote add origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
 
           # Try to fetch existing release branch
