@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-21T14:46:03.941Z",
+  "generatedAt": "2026-08-21T15:03:17.415Z",
   "addons": [
     {
       "id": "example",
@@ -87,7 +87,7 @@
         },
         "zh-CN": {
           "@name": "按住 Alt 键复制积木",
-          "@description": "按住 Ait 键拖动积木可以复制积木。"
+          "@description": "按住 Alt 键拖动积木可以复制积木。"
         }
       },
       "astratch": {
