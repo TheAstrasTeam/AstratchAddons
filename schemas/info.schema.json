@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Astratch Addon info.yaml",
+  "description": "Schema for an Astratch addon's info.yaml (plugin metadata). CI validates every addon against this schema.",
+  "type": "object",
+  "required": ["id", "name", "version", "author", "description", "icon", "main", "astratch"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Unique addon id (must match its directory name)"
+    },
+    "name": { "type": "string" },
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Semantic version of the current release"
+    },
+    "author": { "type": "string" },
+    "description": { "type": "string" },
+    "license": { "type": "string" },
+    "icon": {
+      "type": "string",
+      "description": "Path to the addon icon, e.g. assets/icon.svg"
+    },
+    "typescript": {
+      "type": "boolean",
+      "description": "True if the source is TypeScript/JSX (compiled by CI)"
+    },
+    "defaultEnabled": {
+      "type": "boolean",
+      "description": "Whether the addon is enabled by default on first install"
+    },
+    "astratch": {
+      "type": "object",
+      "required": ["minVersion"],
+      "additionalProperties": false,
+      "properties": {
+        "minVersion": {
+          "type": "string",
+          "pattern": "^\\d+\\.\\d+\\.\\d+$",
+          "description": "Minimum Astratch version required by this addon"
+        },
+        "settings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "id", "type"],
+            "additionalProperties": false,
+            "properties": {
+              "name": { "type": "string" },
+              "id": { "type": "string" },
+              "type": { "enum": ["string", "number", "boolean"] },
+              "default": { "type": ["string", "number", "boolean"] },
+              "min": { "type": "number" },
+              "max": { "type": "number" },
+              "allowLines": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "files": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Additional JS files to include in the release (for pure JS addons with multiple files). Supports file paths and directory paths (trailing /). Entry point is always included."
+    }
+  }
+}

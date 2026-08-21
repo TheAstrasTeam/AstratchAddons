@@ -27,15 +27,18 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Compile TSX addons to JS
+      - name: Validate info.yaml
+        run: npm run validate
+
+      - name: Compile addons to versioned releases
         run: npm run build
 
-      - name: Update .gitattributes for TSX addons
-        run: npm run gitattributes
+      - name: Generate registry.json
+        run: npm run registry
 
       - name: Commit compiled output
         if: github.event_name == 'push'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "build: compile addon TSX to JS"
-          file_pattern: "addons/*/main.js addons/*/manifest.json .gitattributes"
+          commit_message: "build: compile addon releases and update registry"
+          file_pattern: "addons/*/releases/** addons/*/info.yaml registry.json"
