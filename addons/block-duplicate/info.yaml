@@ -9,4 +9,4 @@ icon: assets/icon.svg
 main: main.js
 
 astratch:
-  minVersion: 0.1.0
+  minVersion: 0.0.0

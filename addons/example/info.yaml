@@ -10,7 +10,7 @@ main: main.tsx
 typescript: true
 
 astratch:
-  minVersion: 0.1.0
+  minVersion: 0.0.0
   settings:
     - name: greeting name
       id: name
