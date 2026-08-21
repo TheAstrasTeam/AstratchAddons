@@ -26,9 +26,6 @@ const semverCompare = (a, b) => {
   return 0;
 };
 
-const svgToDataUrl = (text) =>
-  `data:image/svg+xml;charset=utf-8,${encodeURIComponent(text.trim())}`;
-
 const registry = {
   schemaVersion: 1,
   generatedAt: new Date().toISOString(),
@@ -64,25 +61,19 @@ for (const name of addons) {
 
   const currentVersion = versions[versions.length - 1];
 
-  // 图标：优先取当前 release 目录中的图标文件（已被构建脚本拷贝过去）
+  // 图标：输出文件路径（相对于 release 根目录），不再内联 data URL
   let icon = "";
   if (info.icon) {
-    const iconPath = join(releasesDir, currentVersion, info.icon);
-    if (existsSync(iconPath) && info.icon.toLowerCase().endsWith(".svg")) {
-      icon = svgToDataUrl(readFileSync(iconPath, "utf8"));
-    }
+    icon = `${name}@v${currentVersion}/${info.icon}`;
   }
 
+  // i18n：输出文件路径（相对于 release 根目录），不再内联 JSON
   const i18n = {};
   const i18nDir = join(dir, "i18n");
   if (existsSync(i18nDir)) {
     for (const localeFile of readdirSync(i18nDir).filter((f) => f.endsWith(".json"))) {
       const locale = localeFile.replace(/\.json$/, "");
-      try {
-        i18n[locale] = JSON.parse(readFileSync(join(i18nDir, localeFile), "utf8"));
-      } catch {
-        console.log(`[warn] ${name}: bad i18n file ${localeFile}`);
-      }
+      i18n[locale] = `${name}@v${currentVersion}/i18n/${localeFile}`;
     }
   }
 
