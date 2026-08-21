@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-21T12:34:49.819Z",
+  "generatedAt": "2026-08-21T13:32:16.743Z",
   "addons": [
     {
       "id": "example",
@@ -63,7 +63,7 @@
         }
       },
       "astratch": {
-        "minVersion": "0.1.0"
+        "minVersion": "0.0.0"
       },
       "versions": [
         "1.0.0"
@@ -91,7 +91,7 @@
         }
       },
       "astratch": {
-        "minVersion": "0.1.0"
+        "minVersion": "0.0.0"
       },
       "versions": [
         "1.0.0"
