@@ -99,7 +99,7 @@ for (const name of addons) {
     i18n,
     astratch: { minVersion: info.astratch?.minVersion ?? "0.0.0" },
     versions,
-    download: `addons/${name}/releases/${currentVersion}/`,
+    download: `${name}@v${currentVersion}/`,
   });
   console.log(
     `[registry] ${name}@${currentVersion} (${versions.length} versions)`,

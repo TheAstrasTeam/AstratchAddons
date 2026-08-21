@@ -9,6 +9,7 @@
     "registry": "node scripts/registry.mjs",
     "validate": "node scripts/validate.mjs",
     "typecheck": "tsc --noEmit",
+    "prepare-release": "node scripts/prepare-release.mjs",
     "check": "npm run typecheck && npm run validate && npm run build && npm run registry"
   },
   "devDependencies": {

@@ -8,17 +8,24 @@ No self-hosted server, database, GitHub Pages, or backend. Distribution and upda
 
 ```
 GitHub Actions (push to main)
-   │  npm ci → typecheck → validate → build → registry
+   │  npm ci → typecheck → validate → build → registry → prepare-release
    ▼
-addons/<id>/releases/<version>/   ← every release saved independently; old versions never overwritten
-registry.json                     ← unified store entry (single file, one request for the whole catalog)
+main branch:
+  addons/<id>/info.yaml, main.tsx, ...   ← source code only
+  registry.json                           ← store entry (committed)
+
+release branch (append-only, never removes old versions):
+  <id>@v<version>/                        ← flat release dirs (addon.js, info.json, assets/)
+  registry.json                           ← same store entry
    │
    ▼
 Astratch (runtime)
    1. startup → reads cached registry → shows the store immediately
-   2. silently fetches the latest registry.json in the background → updates the cache
-   3. downloads addon.js for the chosen version via GitHub Raw when the user installs an addon
+   2. silently fetches the latest registry.json from release branch → updates the cache
+   3. downloads <id>@v<version>/addon.js via GitHub Raw when the user installs an addon
 ```
+
+The **release branch** is append-only — old versions are never removed or overwritten. New versions are added alongside existing ones.
 
 ## Structure
 
@@ -32,7 +39,7 @@ addons/<id>/
   main.js                     Plain JavaScript source
   assets/icon.svg             Addon icon
   i18n/<locale>.json          Optional user-visible translations
-  releases/<version>/         Compiled, versioned release artifacts (auto-built, gitignored)
+  releases/<version>/         Compiled release artifacts (gitignored on main, lives on release branch)
     addon.js                  Compiled entry point
     info.json                 info.yaml converted to JSON
     assets/                   Copied resources
@@ -40,8 +47,23 @@ scripts/
   build.mjs                   Compiles each addon to releases/<version>/
   registry.mjs                Scans addons + releases, generates registry.json
   validate.mjs                Validates all addons' info.yaml against the schema
+  prepare-release.mjs         Copies releases to flat <id>@v<version>/ dirs for release branch
 .gitattributes                Marks releases/** as linguist-generated
 ```
+
+### Release branch
+
+A separate orphan `release` branch contains only compiled artifacts:
+
+```
+<id>@v<version>/              ← flat release dirs
+  addon.js
+  info.json
+  assets/
+registry.json                 ← same store entry as main
+```
+
+No source code, no scripts, no workflow files. The Astratch runtime fetches from this branch.
 
 ## info.yaml
 
@@ -143,7 +165,9 @@ Single file with the whole catalog as an **array**:
 }
 ```
 
-The client derives per-version URLs from `download` (strip trailing `<version>/`) + target version, e.g. `addons/example/releases/1.0.0/addon.js`.
+The client fetches from the **release** branch. The `download` field points directly to the addon dir:
+
+- `download: "example@v1.0.0/"` → `https://raw.githubusercontent.com/.../release/example@v1.0.0/addon.js`
 
 ## Releasing
 
@@ -151,7 +175,7 @@ The client derives per-version URLs from `download` (strip trailing `<version>/`
 2. Commit to `main`
 3. CI builds `releases/<new-version>/`, regenerates `registry.json`, and commits the artifacts
 
-Existing version directories are never overwritten.
+Existing version directories are never overwritten. CI also force-pushes a clean `release` branch with only the compiled artifacts.
 
 ## Writing an addon
 
@@ -224,7 +248,8 @@ Use in code: `ctx.t("addon_<id>:key")`
 
 ```bash
 npm install
-npm run check   # typecheck + validate + build + registry
+npm run check            # typecheck + validate + build + registry
+npm run prepare-release  # copy releases to flat <id>@v<version>/ dirs for release branch
 ```
 
-GitHub Actions runs `npm run check` on every push to `main` and commits the compiled releases and registry. To release an addon, add its id to `addons.json` and commit the source.
+GitHub Actions runs `npm run check` on every push to `main`, commits the compiled releases and registry, then prepares and force-pushes the `release` branch. To release an addon, add its id to `addons.json` and commit the source.

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-21T11:42:17.383Z",
+  "generatedAt": "2026-08-21T12:34:49.819Z",
   "addons": [
     {
       "id": "example",
@@ -68,7 +68,7 @@
       "versions": [
         "1.0.0"
       ],
-      "download": "addons/example/releases/1.0.0/"
+      "download": "example@v1.0.0/"
     },
     {
       "id": "block-duplicate",
@@ -96,7 +96,7 @@
       "versions": [
         "1.0.0"
       ],
-      "download": "addons/block-duplicate/releases/1.0.0/"
+      "download": "block-duplicate@v1.0.0/"
     }
   ]
 }

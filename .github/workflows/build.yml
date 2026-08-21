@@ -36,9 +36,46 @@ jobs:
       - name: Generate registry.json
         run: npm run registry
 
-      - name: Commit compiled output
+      - name: Commit registry.json to main
         if: github.event_name == 'push'
         uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: "build: compile addon releases and update registry"
-          file_pattern: "addons/*/releases/** addons/*/info.yaml registry.json"
+          commit_message: "build: update registry.json"
+          file_pattern: "registry.json"
+
+      - name: Prepare release content
+        if: github.event_name == 'push'
+        run: node scripts/prepare-release.mjs
+
+      - name: Deploy to release branch (merge, never remove old versions)
+        if: github.event_name == 'push'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Fetch release branch
+          git fetch origin release:release 2>/dev/null || true
+
+          if git rev-parse --verify release >/dev/null 2>&1; then
+            # Release branch exists — checkout and merge new files
+            git checkout release
+            # Copy new release files on top (additive, never removes)
+            cp -rn "$GITHUB_WORKSPACE/release/"* . 2>/dev/null || true
+            # Always overwrite registry.json (it's the source of truth)
+            cp "$GITHUB_WORKSPACE/release/registry.json" ./registry.json
+            git add -A
+            if ! git diff --cached --quiet; then
+              git commit -m "build: update release branch"
+              git push origin release
+            else
+              echo "No changes to commit"
+            fi
+          else
+            # First time — create orphan branch with release content
+            git checkout --orphan release
+            git rm -rf . 2>/dev/null || true
+            cp -r "$GITHUB_WORKSPACE/release/"* .
+            git add -A
+            git commit -m "build: initial release branch"
+            git push origin release
+          fi
