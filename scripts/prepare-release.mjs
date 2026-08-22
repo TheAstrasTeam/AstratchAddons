@@ -121,7 +121,7 @@ for (const name of addons) {
     defaultEnabled: info.defaultEnabled ?? false,
     settings: info.astratch?.settings ?? [],
     i18n,
-    astratch: { minVersion: info.astratch?.minVersion ?? "0.0.0" },
+    astratch: { version: info.astratch?.version ?? "*" },
     versions,
   });
 

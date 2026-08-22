@@ -40,9 +40,9 @@ for (const name of addons) {
   if (!info.description) errors.push(`${name}: missing description`);
   if (!info.icon) errors.push(`${name}: missing icon`);
 
-  const minVersion = info.astratch?.minVersion;
-  if (!SEMVER.test(String(minVersion ?? ""))) {
-    errors.push(`${name}: invalid astratch.minVersion "${minVersion}"`);
+  const versionRange = info.astratch?.version;
+  if (versionRange !== undefined && typeof versionRange !== "string") {
+    errors.push(`${name}: invalid astratch.version "${versionRange}"`);
   }
 
   if (info.astratch?.settings !== undefined && !Array.isArray(info.astratch.settings)) {

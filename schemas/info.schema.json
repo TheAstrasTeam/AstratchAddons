@@ -34,13 +34,12 @@
     },
     "astratch": {
       "type": "object",
-      "required": ["minVersion"],
+      "required": ["version"],
       "additionalProperties": false,
       "properties": {
-        "minVersion": {
+        "version": {
           "type": "string",
-          "pattern": "^\\d+\\.\\d+\\.\\d+$",
-          "description": "Minimum Astratch version required by this addon"
+          "description": "Semver range of compatible Astratch versions (e.g. \">=1.0.0 <2.0.0\")"
         },
         "settings": {
           "type": "array",
