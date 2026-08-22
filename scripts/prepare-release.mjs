@@ -110,6 +110,15 @@ for (const name of addons) {
     }
   }
 
+  // readme：自动检测 README 目录中的语言文件
+  const readme = [];
+  const readmeDir = join("addons", name, "README");
+  if (existsSync(readmeDir)) {
+    for (const f of readdirSync(readmeDir).filter((f) => f.endsWith(".md"))) {
+      readme.push(f.replace(/\.md$/, ""));
+    }
+  }
+
   registry.addons.push({
     id: name,
     name: info.name ?? name,
@@ -121,6 +130,7 @@ for (const name of addons) {
     defaultEnabled: info.defaultEnabled ?? false,
     settings: info.astratch?.settings ?? [],
     i18n,
+    readme,
     astratch: { version: info.astratch?.version ?? "*" },
     versions,
   });
@@ -145,6 +155,10 @@ for (const name of addons) {
 
   if (existsSync(i18nDir)) {
     cpSync(i18nDir, join(outDir, "i18n"), { recursive: true });
+  }
+
+  if (existsSync(readmeDir)) {
+    cpSync(readmeDir, join(outDir, "README"), { recursive: true });
   }
 
   totalReleases++;
