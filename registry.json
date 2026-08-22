@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-22T09:09:33.693Z",
+  "generatedAt": "2026-08-22T10:52:16.458Z",
   "addons": [
     {
       "id": "example",
@@ -9,7 +9,7 @@
       "author": "AstrasTeam",
       "description": "A sample addon that shows a notification when enabled.",
       "license": "MIT",
-      "icon": "example@v1.0.0/assets/icon.svg",
+      "icon": "assets/icon.svg",
       "defaultEnabled": false,
       "settings": [
         {
@@ -40,17 +40,16 @@
           "allowLines": true
         }
       ],
-      "i18n": {
-        "en": "example@v1.0.0/i18n/en.json",
-        "zh-CN": "example@v1.0.0/i18n/zh-CN.json"
-      },
+      "i18n": [
+        "en",
+        "zh-CN"
+      ],
       "astratch": {
         "minVersion": "0.0.0"
       },
       "versions": [
         "1.0.0"
-      ],
-      "download": "example@v1.0.0/"
+      ]
     },
     {
       "id": "block-duplicate",
@@ -59,20 +58,19 @@
       "author": "AstrasTeam",
       "description": "Quickly duplicate a script by dragging it while holding the Alt key.",
       "license": "MIT",
-      "icon": "block-duplicate@v1.0.0/assets/icon.svg",
+      "icon": "assets/icon.svg",
       "defaultEnabled": false,
       "settings": [],
-      "i18n": {
-        "en": "block-duplicate@v1.0.0/i18n/en.json",
-        "zh-CN": "block-duplicate@v1.0.0/i18n/zh-CN.json"
-      },
+      "i18n": [
+        "en",
+        "zh-CN"
+      ],
       "astratch": {
         "minVersion": "0.0.0"
       },
       "versions": [
         "1.0.0"
-      ],
-      "download": "block-duplicate@v1.0.0/"
+      ]
     }
   ]
 }
