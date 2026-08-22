@@ -95,19 +95,18 @@ for (const name of addons) {
 
   const currentVersion = versions[versions.length - 1];
 
-  // 图标：输出相对路径
+  // 图标：输出相对路径（相对于版本目录）
   let icon = "";
   if (info.icon) {
-    icon = `${name}@v${currentVersion}/${info.icon}`;
+    icon = info.icon;
   }
 
-  // i18n：输出相对路径
-  const i18n = {};
+  // i18n：输出支持的语言列表
+  const i18n = [];
   const i18nDir = join("addons", name, "i18n");
   if (existsSync(i18nDir)) {
     for (const localeFile of readdirSync(i18nDir).filter((f) => f.endsWith(".json"))) {
-      const locale = localeFile.replace(/\.json$/, "");
-      i18n[locale] = `${name}@v${currentVersion}/i18n/${localeFile}`;
+      i18n.push(localeFile.replace(/\.json$/, ""));
     }
   }
 
@@ -124,7 +123,6 @@ for (const name of addons) {
     i18n,
     astratch: { minVersion: info.astratch?.minVersion ?? "0.0.0" },
     versions,
-    download: `${name}@v${currentVersion}/`,
   });
 
   // ── 拷贝 release 产物 ──
