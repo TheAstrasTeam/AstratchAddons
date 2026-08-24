@@ -1,11 +1,11 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-22T15:24:06.066Z",
+  "generatedAt": "2026-08-24T10:21:11.444Z",
   "addons": [
     {
       "id": "example",
       "name": "Example Addon",
-      "version": "1.0.0",
+      "version": "1.1.0",
       "author": "AstrasTeam",
       "description": "A sample addon that shows a notification when enabled.",
       "license": "MIT",
@@ -52,7 +52,7 @@
         "version": ">=0.0.0"
       },
       "versions": [
-        "1.0.0"
+        "1.1.0"
       ]
     },
     {
