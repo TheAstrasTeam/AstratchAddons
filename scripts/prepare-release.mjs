@@ -1,14 +1,11 @@
 /**
  * prepare-release.mjs
  *
- * 生成 registry.json 并输出当前构建版本到 release/ 目录：
- *   release/<id>@v<version>/addon.js
- *   release/<id>@v<version>/info.json
- *   release/<id>@v<version>/assets/
- *   release/<id>@v<version>/i18n/
- *   release/registry.json
+ * 生成 registry.json 并输出当前构建版本到 release/ 目录。
  *
- * 只输出当前版本，不包含历史版本（历史版本已在 release 分支上）。
+ * 版本列表会合并：本地 releases/ 目录（当前构建）+ release 分支上已有的 registry.json。
+ * 这样即使旧版本的 release 目录不在 main 上，registry 仍会包含所有历史版本。
+ *
  * registry.json 只存在于 release 分支，不提交到 main。
  */
 import {
@@ -35,6 +32,28 @@ if (existsSync(OUT_DIR)) {
   rmSync(OUT_DIR, { recursive: true });
 }
 mkdirSync(OUT_DIR, { recursive: true });
+
+// ── 从 release 分支获取已有的 registry.json，用于合并版本列表 ──
+const REGISTRY_URL =
+  "https://raw.githubusercontent.com/TheAstrasTeam/AstratchAddons/refs/heads/release/registry.json";
+
+let existingRegistry = null;
+try {
+  const resp = await fetch(REGISTRY_URL);
+  if (resp.ok) {
+    existingRegistry = await resp.json();
+    console.log(`[merge] fetched existing registry (${existingRegistry.addons.length} addons)`);
+  }
+} catch {
+  console.log("[merge] no existing registry found, building from scratch");
+}
+
+/** 获取某个插件在 release 分支上已有的版本列表 */
+function getExistingVersions(addonId) {
+  if (!existingRegistry) return [];
+  const entry = existingRegistry.addons.find((a) => a.id === addonId);
+  return entry?.versions ?? [];
+}
 
 /** 读取并解析插件的 info.yaml */
 function readInfo(name) {
@@ -80,13 +99,17 @@ for (const name of addons) {
     console.log(`[skip] ${name}: no releases dir (run build first)`);
     continue;
   }
-  const versions = readdirSync(releasesDir)
-    .filter(
-      (v) =>
-        existsSync(join(releasesDir, v, "addon.js")) &&
-        statSync(join(releasesDir, v, "addon.js")).isFile(),
-    )
-    .sort(semverCompare);
+  const versions = [
+    ...new Set([
+      ...readdirSync(releasesDir)
+        .filter(
+          (v) =>
+            existsSync(join(releasesDir, v, "addon.js")) &&
+            statSync(join(releasesDir, v, "addon.js")).isFile(),
+        ),
+      ...getExistingVersions(name),
+    ]),
+  ].sort(semverCompare);
 
   if (versions.length === 0) {
     console.log(`[skip] ${name}: no built releases`);
