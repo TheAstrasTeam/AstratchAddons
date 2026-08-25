@@ -5,8 +5,15 @@
  * "孤立积木"指未与任何根积木（脚本起点）相连的积木。
  * 根积木是没有 previousConnection 且没有 outputConnection 的积木（如事件帽子块）。
  */
+
+// 模块级活跃标记：用于在 configureContextMenu 中判断本插件是否仍启用。
+// 这样即使 cleanup 未能及时移除 hook（例如工作区已销毁），菜单也不会出现。
+const activeInstances = new Set();
+
 export default (ctx) => {
   const { blockly: Blockly, vm } = ctx;
+  const ADDON_ID = "clean-orphans";
+  const I18N_NS = `addon_${ADDON_ID}`;
 
   const getWorkspace = () => vm.runtime.blocks?.workspaceSvg ?? null;
 
@@ -57,7 +64,7 @@ export default (ctx) => {
       ctx.toast.create({
         type: "info",
         id: "addon_clean_orphans_none",
-        text: ctx.t("addon_clean-orphans:noOrphans"),
+        text: ctx.t("noOrphans", { ns: I18N_NS }),
       });
       return;
     }
@@ -79,7 +86,7 @@ export default (ctx) => {
       ctx.toast.create({
         type: "info",
         id: "addon_clean_orphans_done",
-        text: ctx.t("addon_clean-orphans:cleaned", { count }),
+        text: ctx.t("cleaned", { ns: I18N_NS, count }),
       });
     }, 0);
   };
@@ -94,7 +101,11 @@ export default (ctx) => {
     const prev = workspace.configureContextMenu;
 
     workspace.configureContextMenu = (options, e) => {
+      // 先调用之前的 handler
       if (prev) prev(options, e);
+
+      // 如果本插件已禁用，不添加菜单项
+      if (!activeInstances.has(ADDON_ID)) return;
 
       // scanOrphans=true（默认）：右键时做 BFS，无孤立积木则灰显菜单项。
       // scanOrphans=false：跳过右键时的 BFS，始终启用菜单项（BFS 推迟到点击时）。
@@ -107,7 +118,7 @@ export default (ctx) => {
       options.push({ separator: true });
       options.push({
         id: "clean_orphans",
-        text: ctx.t("addon_clean-orphans:menuLabel"),
+        text: ctx.t("menuLabel", { ns: I18N_NS }),
         enabled,
         weight: 200,
         scope: { workspace },
@@ -117,6 +128,9 @@ export default (ctx) => {
       });
     };
   };
+
+  // 标记为活跃
+  activeInstances.add(ADDON_ID);
 
   // 首次注入当前工作区
   const ws = getWorkspace();
@@ -131,14 +145,16 @@ export default (ctx) => {
   };
 
   return () => {
+    // 标记为非活跃
+    activeInstances.delete(ADDON_ID);
+
     // 恢复 Blockly.inject
     Blockly.inject = originalInject;
 
-    // 移除当前工作区的 hook
+    // 尝试移除当前工作区的 hook（工作区可能已销毁）
     const workspace = getWorkspace();
     if (workspace && workspace.__cleanOrphansHooked) {
       delete workspace.__cleanOrphansHooked;
-      // configureContextMenu 恢复为 null（原始值）
       workspace.configureContextMenu = null;
     }
   };
