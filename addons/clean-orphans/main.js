@@ -57,29 +57,31 @@ export default (ctx) => {
       ctx.toast.create({
         type: "info",
         id: "addon_clean_orphans_none",
-        text: ctx.t("addon_clean_orphans:noOrphans"),
+        text: ctx.t("addon_clean-orphans:noOrphans"),
       });
       return;
     }
 
     const count = orphans.length;
 
-    // 使用 Blockly 事件分组，使所有删除可以一次撤销
-    const prevGroup = Blockly.Events.getGroup?.();
-    try {
-      Blockly.Events.setGroup(true);
-      for (const block of orphans) {
-        block.dispose(false);
+    // 延迟执行删除，确保右键菜单先关闭
+    setTimeout(() => {
+      const prevGroup = Blockly.Events.getGroup?.();
+      try {
+        Blockly.Events.setGroup(true);
+        for (const block of orphans) {
+          block.dispose(false);
+        }
+      } finally {
+        Blockly.Events.setGroup(prevGroup);
       }
-    } finally {
-      Blockly.Events.setGroup(prevGroup);
-    }
 
-    ctx.toast.create({
-      type: "info",
-      id: "addon_clean_orphans_done",
-      text: ctx.t("addon_clean_orphans:cleaned", { count }),
-    });
+      ctx.toast.create({
+        type: "info",
+        id: "addon_clean_orphans_done",
+        text: ctx.t("addon_clean-orphans:cleaned", { count }),
+      });
+    }, 0);
   };
 
   /**
@@ -98,7 +100,7 @@ export default (ctx) => {
       options.push({ separator: true });
       options.push({
         id: "clean_orphans",
-        text: ctx.t("addon_clean_orphans:menuLabel"),
+        text: ctx.t("addon_clean-orphans:menuLabel"),
         enabled: orphans.length > 0,
         weight: 200,
         scope: { workspace },
