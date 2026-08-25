@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-24T11:00:07.371Z",
+  "generatedAt": "2026-08-25T14:09:20.540Z",
   "addons": [
     {
       "id": "example",
@@ -62,6 +62,31 @@
       "version": "1.0.0",
       "author": "AstrasTeam",
       "description": "Quickly duplicate a script by dragging it while holding the Alt key.",
+      "license": "MIT",
+      "icon": "assets/icon.svg",
+      "defaultEnabled": false,
+      "settings": [],
+      "i18n": [
+        "en",
+        "zh-CN"
+      ],
+      "readme": [
+        "en",
+        "zh-CN"
+      ],
+      "astratch": {
+        "version": ">=0.0.0"
+      },
+      "versions": [
+        "1.0.0"
+      ]
+    },
+    {
+      "id": "clean-orphans",
+      "name": "Clean Orphans",
+      "version": "1.0.0",
+      "author": "AstrasTeam",
+      "description": "Adds a \"Clean orphans\" button to the workspace right-click menu to remove disconnected blocks.",
       "license": "MIT",
       "icon": "assets/icon.svg",
       "defaultEnabled": false,

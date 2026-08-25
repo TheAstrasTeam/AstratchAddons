@@ -1,0 +1,13 @@
+{
+  "id": "clean-orphans",
+  "name": "Clean Orphans",
+  "version": "1.0.0",
+  "author": "AstrasTeam",
+  "description": "Adds a \"Clean orphans\" button to the workspace right-click menu to remove disconnected blocks.",
+  "license": "MIT",
+  "icon": "assets/icon.svg",
+  "main": "main.js",
+  "astratch": {
+    "version": ">=0.0.0"
+  }
+}
