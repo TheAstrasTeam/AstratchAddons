@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-08-25T14:55:21.756Z",
+  "generatedAt": "2026-08-25T15:03:34.588Z",
   "addons": [
     {
       "id": "example",
@@ -90,7 +90,14 @@
       "license": "MIT",
       "icon": "assets/icon.svg",
       "defaultEnabled": false,
-      "settings": [],
+      "settings": [
+        {
+          "name": "scan orphans on open",
+          "id": "scanOrphans",
+          "type": "boolean",
+          "default": true
+        }
+      ],
       "i18n": [
         "en",
         "zh-CN"
