@@ -1,4 +1,5 @@
 [
     "example",
-    "block-duplicate"
+    "block-duplicate",
+    "clean-orphans"
 ]
