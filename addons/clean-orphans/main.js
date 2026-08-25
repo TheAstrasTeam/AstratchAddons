@@ -96,12 +96,19 @@ export default (ctx) => {
     workspace.configureContextMenu = (options, e) => {
       if (prev) prev(options, e);
 
-      const orphans = findOrphans(workspace);
+      // scanOrphans=true（默认）：右键时做 BFS，无孤立积木则灰显菜单项。
+      // scanOrphans=false：跳过右键时的 BFS，始终启用菜单项（BFS 推迟到点击时）。
+      const scanOnOpen = ctx.settings.get("scanOrphans") !== false;
+      let enabled = true;
+      if (scanOnOpen) {
+        enabled = findOrphans(workspace).length > 0;
+      }
+
       options.push({ separator: true });
       options.push({
         id: "clean_orphans",
         text: ctx.t("addon_clean-orphans:menuLabel"),
-        enabled: orphans.length > 0,
+        enabled,
         weight: 200,
         scope: { workspace },
         callback: () => {

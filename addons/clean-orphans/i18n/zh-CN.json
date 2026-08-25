@@ -1,6 +1,7 @@
 {
   "@name": "清理孤立积木",
   "@description": "在工作区右键菜单添加「清理孤立积木」按钮，删除未连接到任何脚本的积木。",
+  "@settings/scanOrphans": "打开菜单时扫描孤立积木",
   "menuLabel": "清理孤立积木",
   "noOrphans": "没有找到孤立积木。",
   "cleaned": "已删除 {{count}} 个孤立积木。"

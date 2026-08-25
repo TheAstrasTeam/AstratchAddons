@@ -1,6 +1,7 @@
 {
   "@name": "Clean Orphans",
   "@description": "Adds a \"Clean orphans\" button to the workspace right-click menu to remove disconnected blocks.",
+  "@settings/scanOrphans": "Scan orphans when opening menu",
   "menuLabel": "Clean orphans",
   "noOrphans": "No orphan blocks found.",
   "cleaned": "Removed {{count}} orphan block(s)."
