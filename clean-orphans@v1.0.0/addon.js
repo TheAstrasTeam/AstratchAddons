@@ -53,25 +53,10 @@ export default (ctx) => {
   };
 
   /**
-   * 删除孤立积木。
+   * 删除孤立积木并发送通知。
    */
-  const cleanOrphans = () => {
-    const workspace = getWorkspace();
-    if (!workspace) return;
-
-    const orphans = findOrphans(workspace);
-    if (orphans.length === 0) {
-      ctx.toast.create({
-        type: "info",
-        id: "addon_clean_orphans_none",
-        text: ctx.t("noOrphans", { ns: I18N_NS }),
-      });
-      return;
-    }
-
+  const deleteOrphans = (orphans) => {
     const count = orphans.length;
-
-    // 延迟执行删除，确保右键菜单先关闭
     setTimeout(() => {
       const prevGroup = Blockly.Events.getGroup?.();
       try {
@@ -92,6 +77,28 @@ export default (ctx) => {
   };
 
   /**
+   * 点击菜单项时的处理逻辑。
+   * scanOrphans=true 时 orphans 已在右键时预计算传入；
+   * scanOrphans=false 时需即时做 BFS。
+   */
+  const cleanOrphans = (precomputed) => {
+    const workspace = getWorkspace();
+    if (!workspace) return;
+
+    const orphans = precomputed ?? findOrphans(workspace);
+    if (orphans.length === 0) {
+      ctx.toast.create({
+        type: "info",
+        id: "addon_clean_orphans_none",
+        text: ctx.t("noOrphans", { ns: I18N_NS }),
+      });
+      return;
+    }
+
+    deleteOrphans(orphans);
+  };
+
+  /**
    * 给工作区注入"清理孤立积木"右键菜单项。
    */
   const hookWorkspace = (workspace) => {
@@ -101,31 +108,43 @@ export default (ctx) => {
     const prev = workspace.configureContextMenu;
 
     workspace.configureContextMenu = (options, e) => {
-      // 先调用之前的 handler
       if (prev) prev(options, e);
-
-      // 如果本插件已禁用，不添加菜单项
       if (!activeInstances.has(ADDON_ID)) return;
 
-      // scanOrphans=true（默认）：右键时做 BFS，无孤立积木则灰显菜单项。
-      // scanOrphans=false：跳过右键时的 BFS，始终启用菜单项（BFS 推迟到点击时）。
       const scanOnOpen = ctx.settings.get("scanOrphans") !== false;
-      let enabled = true;
-      if (scanOnOpen) {
-        enabled = findOrphans(workspace).length > 0;
-      }
 
-      options.push({ separator: true });
-      options.push({
-        id: "clean_orphans",
-        text: ctx.t("menuLabel", { ns: I18N_NS }),
-        enabled,
-        weight: 200,
-        scope: { workspace },
-        callback: () => {
-          cleanOrphans();
-        },
-      });
+      if (scanOnOpen) {
+        // 预扫描：右键时做 BFS
+        const orphans = findOrphans(workspace);
+        const count = orphans.length;
+        options.push({ separator: true });
+        options.push({
+          id: "clean_orphans",
+          text:
+            count > 0
+              ? ctx.t("menuLabelCount", { ns: I18N_NS, count })
+              : ctx.t("menuLabel", { ns: I18N_NS }),
+          enabled: count > 0,
+          weight: 200,
+          scope: { workspace },
+          callback: () => {
+            cleanOrphans(orphans);
+          },
+        });
+      } else {
+        // 不预扫描：始终启用，点击时再做 BFS
+        options.push({ separator: true });
+        options.push({
+          id: "clean_orphans",
+          text: ctx.t("menuLabel", { ns: I18N_NS }),
+          enabled: true,
+          weight: 200,
+          scope: { workspace },
+          callback: () => {
+            cleanOrphans();
+          },
+        });
+      }
     };
   };
 
@@ -145,13 +164,9 @@ export default (ctx) => {
   };
 
   return () => {
-    // 标记为非活跃
     activeInstances.delete(ADDON_ID);
-
-    // 恢复 Blockly.inject
     Blockly.inject = originalInject;
 
-    // 尝试移除当前工作区的 hook（工作区可能已销毁）
     const workspace = getWorkspace();
     if (workspace && workspace.__cleanOrphansHooked) {
       delete workspace.__cleanOrphansHooked;
