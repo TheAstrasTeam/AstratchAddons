@@ -8,6 +8,14 @@
   "icon": "assets/icon.svg",
   "main": "main.js",
   "astratch": {
-    "version": ">=0.0.0"
+    "version": ">=0.0.0",
+    "settings": [
+      {
+        "name": "scan orphans on open",
+        "id": "scanOrphans",
+        "type": "boolean",
+        "default": true
+      }
+    ]
   }
 }

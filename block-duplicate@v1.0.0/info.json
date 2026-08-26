@@ -8,6 +8,6 @@
   "icon": "assets/icon.svg",
   "main": "main.js",
   "astratch": {
-    "minVersion": "0.0.0"
+    "version": ">=0.0.0"
   }
 }
