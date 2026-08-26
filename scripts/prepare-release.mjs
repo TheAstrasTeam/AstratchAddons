@@ -18,7 +18,8 @@ import {
   writeFileSync,
   rmSync,
 } from "node:fs";
-import { join } from "node:path";
+import { join, relative } from "node:path";
+import { createHash } from "node:crypto";
 import { parse } from "yaml";
 
 const addons = JSON.parse(readFileSync("addons.json", "utf8"));
@@ -184,8 +185,26 @@ for (const name of addons) {
     cpSync(readmeDir, join(outDir, "README"), { recursive: true });
   }
 
+  // ── 计算哈希并写入 hashes.json ──
+
+  const hashes = {};
+  const collectHashes = (dir) => {
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const fullPath = join(dir, entry.name);
+      if (entry.isDirectory()) {
+        collectHashes(fullPath);
+      } else {
+        const relPath = relative(outDir, fullPath).replace(/\\/g, "/");
+        const content = readFileSync(fullPath);
+        hashes[relPath] = createHash("sha256").update(content).digest("hex");
+      }
+    }
+  };
+  collectHashes(outDir);
+  writeFileSync(join(outDir, "hashes.json"), `${JSON.stringify(hashes, null, 2)}\n`);
+
   totalReleases++;
-  console.log(`[release] ${name}@${version} (${versions.length} versions)`);
+  console.log(`[release] ${name}@${version} (${versions.length} versions, ${Object.keys(hashes).length} files)`);
 }
 
 // 写入 registry.json
