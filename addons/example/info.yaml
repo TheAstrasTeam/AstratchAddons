@@ -16,6 +16,7 @@ astratch:
       id: name
       type: string
       default: world
+      description: Who to greet when the addon runs.
     - name: volume
       id: volume
       type: number
@@ -26,6 +27,7 @@ astratch:
       id: notifyOnDisable
       type: boolean
       default: true
+      description: Whether to show a notification when the addon is disabled.
     - name: multiline note
       id: note
       type: string
