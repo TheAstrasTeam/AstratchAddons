@@ -105,7 +105,9 @@ export default (ctx) => {
     if (!workspace || workspace.__cleanOrphansHooked) return;
     workspace.__cleanOrphansHooked = true;
 
+    // 保存原始 configureContextMenu 以便 cleanup 时完整还原
     const prev = workspace.configureContextMenu;
+    workspace.__cleanOrphansPrev = prev;
 
     workspace.configureContextMenu = (options, e) => {
       if (prev) prev(options, e);
@@ -114,7 +116,6 @@ export default (ctx) => {
       const scanOnOpen = ctx.settings.get("scanOrphans") !== false;
 
       if (scanOnOpen) {
-        // 预扫描：右键时做 BFS
         const orphans = findOrphans(workspace);
         const count = orphans.length;
         options.push({ separator: true });
@@ -132,7 +133,6 @@ export default (ctx) => {
           },
         });
       } else {
-        // 不预扫描：始终启用，点击时再做 BFS
         options.push({ separator: true });
         options.push({
           id: "clean_orphans",
@@ -146,6 +146,19 @@ export default (ctx) => {
         });
       }
     };
+  };
+
+  /**
+   * 还原指定工作区的 configureContextMenu。
+   */
+  const unhookWorkspace = (workspace) => {
+    if (!workspace || !workspace.__cleanOrphansHooked) return;
+    delete workspace.__cleanOrphansHooked;
+    // 恢复原始的 configureContextMenu（hook 中闭包捕获的 prev），
+    // 而非置 null——否则会破坏其他插件或核心代码设置的回调。
+    workspace.configureContextMenu =
+      workspace.__cleanOrphansPrev ?? null;
+    delete workspace.__cleanOrphansPrev;
   };
 
   // 标记为活跃
@@ -163,14 +176,23 @@ export default (ctx) => {
     return workspace;
   };
 
+  // 监听目标切换：切换目标后工作区会被重建，
+  // 通过此事件确保新工作区也能被 hook。
+  // 这解决了"默认启用时工作区尚未创建"的时序问题。
+  const onSwitchTarget = () => {
+    if (!activeInstances.has(ADDON_ID)) return;
+    const workspace = getWorkspace();
+    if (workspace) hookWorkspace(workspace);
+  };
+  vm.on("switch_target", onSwitchTarget);
+
   return () => {
     activeInstances.delete(ADDON_ID);
     Blockly.inject = originalInject;
+    vm.off("switch_target", onSwitchTarget);
 
+    // 还原当前工作区
     const workspace = getWorkspace();
-    if (workspace && workspace.__cleanOrphansHooked) {
-      delete workspace.__cleanOrphansHooked;
-      workspace.configureContextMenu = null;
-    }
+    unhookWorkspace(workspace);
   };
 };
