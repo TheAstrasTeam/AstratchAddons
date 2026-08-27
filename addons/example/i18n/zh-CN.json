@@ -1,12 +1,12 @@
 {
-  "@name": "Ê¾Àı²å¼ş",
-  "@description": "ÕâÊÇÒ»¸öÊ¾Àı²å¼ş£¬»áÔÚÆôÓÃºÍ½ûÓÃÊ±Õ¹Ê¾Í¨Öª¡£",
-  "@settings/name": "ÎÊºòÃû",
-  "@settings/name.description": "²å¼şÔËĞĞÊ±ÒªÎÊºòµÄ¶ÔÏó¡£",
-  "@settings/volume": "ÒôÁ¿",
-  "@settings/notifyOnDisable": "½ûÓÃÊ±Í¨Öª",
-  "@settings/notifyOnDisable.description": "½ûÓÃ²å¼şÊ±ÊÇ·ñÕ¹Ê¾Í¨Öª¡£",
-  "@settings/note": "¶àĞĞ±¸×¢",
-  "greet": "ÄãºÃ£¬ÊÀ½ç£¡",
-  "bye": "Ê¾Àı²å¼şÒÑ½ûÓÃ¡£"
+  "@name": "ç¤ºä¾‹æ’ä»¶",
+  "@description": "è¿™æ˜¯ä¸€ä¸ªç¤ºä¾‹æ’ä»¶ï¼Œä¼šåœ¨å¯ç”¨å’Œç¦ç”¨æ—¶å±•ç¤ºé€šçŸ¥ã€‚",
+  "@settings/name": "é—®å€™å",
+  "@settings/name.description": "æ’ä»¶è¿è¡Œæ—¶è¦é—®å€™çš„å¯¹è±¡ã€‚",
+  "@settings/volume": "éŸ³é‡",
+  "@settings/notifyOnDisable": "ç¦ç”¨æ—¶é€šçŸ¥",
+  "@settings/notifyOnDisable.description": "ç¦ç”¨æ’ä»¶æ—¶æ˜¯å¦å±•ç¤ºé€šçŸ¥ã€‚",
+  "@settings/note": "å¤šè¡Œå¤‡æ³¨",
+  "greet": "ä½ å¥½ï¼Œä¸–ç•Œï¼",
+  "bye": "ç¤ºä¾‹æ’ä»¶å·²ç¦ç”¨ã€‚"
 }
