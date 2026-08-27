@@ -15,7 +15,8 @@
         "name": "greeting name",
         "id": "name",
         "type": "string",
-        "default": "world"
+        "default": "world",
+        "description": "Who to greet when the addon runs."
       },
       {
         "name": "volume",
@@ -29,7 +30,8 @@
         "name": "notify on disable",
         "id": "notifyOnDisable",
         "type": "boolean",
-        "default": true
+        "default": true,
+        "description": "Whether to show a notification when the addon is disabled."
       },
       {
         "name": "multiline note",
