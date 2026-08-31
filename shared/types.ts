@@ -27,11 +27,25 @@ export interface AddonSettingsApi {
   defs: AddonSettingDefinition[];
 }
 
+export interface SidebarTabOptions {
+  id: string;
+  title: string;
+  /** 标签页图标：SVG 字符串（会作为 <img> 的 src） */
+  icon: string;
+  /** 标签页内容：返回 DOM 元素的函数 */
+  content: () => HTMLElement;
+}
+
+export interface AddonSidebarApi {
+  registerTab(tab: SidebarTabOptions): () => void;
+}
+
 export interface AddonContext {
   blockly?: unknown;
   vm?: unknown;
   toast: ToastApi;
   t: Translator;
   settings: AddonSettingsApi;
+  sidebar: AddonSidebarApi;
   [key: string]: unknown;
 }
