@@ -11,7 +11,7 @@ var main_default = (ctx) => {
   });
   const unregisterTab = ctx.sidebar.registerTab({
     id: "demo-panel",
-    title: ctx.t("addon_example:sidebarTitle"),
+    title: () => ctx.t("addon_example:sidebarTitle"),
     icon: DEMO_TAB_ICON,
     content: () => createDemoPanel(ctx)
   });
