@@ -29,7 +29,8 @@ export interface AddonSettingsApi {
 
 export interface SidebarTabOptions {
   id: string;
-  title: string;
+  /** 标签页标题：字符串或返回字符串的函数（延迟求值，支持 i18n） */
+  title: string | (() => string);
   /** 标签页图标：SVG 字符串（会作为 <img> 的 src） */
   icon: string;
   /** 标签页内容：返回 DOM 元素的函数 */

@@ -18,7 +18,7 @@ export default (ctx: AddonContext) => {
   // 注册侧边栏标签页
   const unregisterTab = ctx.sidebar.registerTab({
     id: "demo-panel",
-    title: ctx.t("addon_example:sidebarTitle"),
+    title: () => ctx.t("addon_example:sidebarTitle"),
     icon: DEMO_TAB_ICON,
     content: () => createDemoPanel(ctx),
   });
