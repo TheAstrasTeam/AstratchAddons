@@ -8,5 +8,9 @@
   "@settings/notifyOnDisable.description": "禁用插件时是否展示通知。",
   "@settings/note": "多行备注",
   "greet": "你好，世界！",
-  "bye": "示例插件已禁用。"
+  "bye": "示例插件已禁用。",
+  "sidebarTitle": "演示面板",
+  "sidebarDesc": "此侧边栏标签页由示例插件注册，用于演示侧边栏注册 API。",
+  "count": "计数",
+  "sidebarInfo": "禁用插件后，此面板将被自动移除。"
 }
