@@ -2,34 +2,66 @@
 
 A sample addon that demonstrates the Astratch addon system.
 
-## Features
+## Headers
 
-- Shows a toast notification when enabled
-- Displays a floating badge in the bottom-right corner
-- Supports configurable settings (greeting name, volume, etc.)
+# This is a Heading h1
+## This is a Heading h2
+###### This is a Heading h6
 
-## Settings
+## Emphasis
 
-| Setting | Type | Default | Description |
-|---------|------|---------|-------------|
-| greeting name | string | world | Name to greet |
-| volume | number | 50 | Volume level (0-100) |
-| notify on disable | boolean | true | Show notification when disabled |
-| multiline note | string | hello\nworld | A multiline note |
+*This text will be italic*  
+_This will also be italic_
 
-## Development
+**This text will be bold**  
+__This will also be bold__
 
-This addon is written in TypeScript with JSX. Run `npm run build` to compile.
+_You **can** combine them_
 
-```tsx
-import { h } from "../../shared/jsx";
-import type { AddonContext } from "../../shared/types";
+## Lists
 
-export default (ctx: AddonContext) => {
-  ctx.toast.create({
-    type: "info",
-    id: "example_greet",
-    text: ctx.t("addon_example:greet"),
-  });
-};
+### Unordered
+
+* Item 1
+* Item 2
+* Item 2a
+* Item 2b
+    * Item 3a
+    * Item 3b
+
+### Ordered
+
+1. Item 1
+2. Item 2
+3. Item 3
+    1. Item 3a
+    2. Item 3b
+
+## Images
+
+![This is an alt text.](https://raw.githubusercontent.com/TheAstrasTeam/AstratchAddons/refs/heads/release/example@v1.1.0/assets/icon.svg "Astratch Logo")
+
+## Links
+
+You may be using [Astratch](https://next.astras.top/editor).
+
+## Blockquotes
+
+> Astratch is a graphical IDE that aims to let you build anything by "snapping blocks together",
+>
+>> just like Scratch.
+
+## Tables
+
+| Left columns  | Right columns |
+| ------------- |:-------------:|
+| left foo      | right foo     |
+| left bar      | right bar     |
+| left baz      | right baz     |
+
+## Blocks of `code`
+
+```
+let message = 'Hello world';
+alert(message);
 ```
