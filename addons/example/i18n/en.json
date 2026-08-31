@@ -8,5 +8,9 @@
   "@settings/notifyOnDisable.description": "Whether to show a notification when the addon is disabled.",
   "@settings/note": "Multiline note",
   "greet": "Hello, world!",
-  "bye": "Goodbye, world!"
+  "bye": "Goodbye, world!",
+  "sidebarTitle": "Demo Panel",
+  "sidebarDesc": "This sidebar tab is registered by the Example Addon to demonstrate the sidebar registration API.",
+  "count": "Count",
+  "sidebarInfo": "This panel will be automatically removed when the addon is disabled."
 }
