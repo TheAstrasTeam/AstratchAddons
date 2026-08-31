@@ -1,23 +1,16 @@
 # Clean Orphans
 
-Adds a "Clean orphans" button to the workspace right-click menu.
+Adds a "Clean orphans" button to the workspace right-click menu to clean orphaned blocks (those without a hat block at the top) .
 
-## What are orphans?
+## Settings
 
-Orphan blocks are blocks that are **not connected to any root block** (scripts). A root block is a block that has no `previousConnection` and no `outputConnection` — typically event/hat blocks that start a script.
+| Name | Default | Description |
+| --- | --- | --- |
+| scan orphans on open | `true` | Pre-scan orphans when the context menu is opened. |
 
-For example, if you disconnect a block from a "when green flag clicked" script, the disconnected block becomes an orphan.
+### scan orphans on open
 
-## Usage
+When **enabled** (default), the addon traverses (BFS) the entire workspace every time you right-click to detect orphan blocks. The menu label displays the current orphan count (e.g. "Clean orphans (3)"), giving you immediate feedback before deleting.
 
-1. Enable this addon
-2. Right-click on the workspace (not on a block)
-3. Click **"Clean orphans"** (or **"清理孤立积木"** in Chinese)
-4. All orphan blocks will be removed at once
+When **disabled**, the BFS scan is skipped on menu open. The menu always shows a generic "Clean orphans" label with no count. The scan only runs when you actually click the button. This can significantly improve performance on large projects with many blocks, since the traversal is no longer triggered on every right-click.
 
-If there are no orphan blocks, the menu item will be grayed out.
-
-## Notes
-
-- All deleted orphans are grouped into a single undo step — press Ctrl+Z to restore them all at once.
-- Only blocks on the main workspace are affected. Blocks in the flyout (toolbox) are not touched.
